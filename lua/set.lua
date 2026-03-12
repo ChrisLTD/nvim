@@ -119,6 +119,9 @@ vim.opt.cursorline = true
 -- Draw a vertical guideline at column 80
 vim.opt.colorcolumn = "80"
 
+-- Status line
+vim.opt.statusline = " %f %m %r %= %{FugitiveHead()} %l:%c "
+
 
 -- =========================
 -- Performance & Responsiveness
