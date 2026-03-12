@@ -1,4 +1,4 @@
 require("set")
 require("config.lazy")
-
-print("Hello, world!")
+require("remap")
+require("autocmds")
