@@ -1,3 +1,3 @@
-Nerd font: `$ brew install --cask font-inconsolata-nerd-font'`
+Nerd font: `$ brew install --cask font-fira-mono-nerd-font'`
 
 Neovim: `$ brew install neovim`
