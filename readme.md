@@ -12,8 +12,8 @@ A minimal, Lua-based Neovim configuration focused on TypeScript and Go developme
 
 ```
 lua/
-  config/lazy.lua       -- Lazy.nvim plugin manager bootstrap
   plugins/              -- Plugin configs (one per file)
+  lazy_init.lua         -- Lazy.nvim plugin manager bootstrap
   set.lua               -- Editor options
   remap.lua             -- Custom keybindings
   autocmds.lua          -- Autocommands (e.g. trim trailing whitespace)
