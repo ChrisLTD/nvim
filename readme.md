@@ -31,6 +31,7 @@ lua/
 | [trouble.nvim](https://github.com/folke/trouble.nvim) | Diagnostics viewer |
 | [conform.nvim](https://github.com/stevearc/conform.nvim) | Code formatting |
 | [vim-fugitive](https://github.com/tpope/vim-fugitive) | Git integration |
+| [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Git hunk signs and actions |
 | [rose-pine](https://github.com/rose-pine/neovim) | Colorscheme |
 
 ## Language Support
@@ -86,6 +87,9 @@ Leader key is `<Space>`.
 | Key | Action |
 |-----|--------|
 | `<leader>gs` | Git status (Fugitive) |
+| `]h` / `[h` | Next/prev git hunk |
+| `<leader>hs` | Stage hunk |
+| `<leader>hr` | Reset hunk |
 
 ### Editing
 
