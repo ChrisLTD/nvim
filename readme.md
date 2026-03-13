@@ -32,6 +32,7 @@ lua/
 | [conform.nvim](https://github.com/stevearc/conform.nvim) | Code formatting |
 | [vim-fugitive](https://github.com/tpope/vim-fugitive) | Git integration |
 | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Git hunk signs and actions |
+| [flash.nvim](https://github.com/folke/flash.nvim) | Jump/motion navigation |
 | [rose-pine](https://github.com/rose-pine/neovim) | Colorscheme |
 
 ## Language Support
@@ -56,6 +57,8 @@ Leader key is `<Space>`.
 | `<leader>pws` | Grep word under cursor |
 | `<leader>pv` | Open file explorer (netrw) |
 | `<leader>vh` | Search help tags |
+| `s` | Flash jump |
+| `S` | Flash treesitter select |
 
 ### LSP
 
