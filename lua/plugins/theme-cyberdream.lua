@@ -7,9 +7,15 @@ return {
 		variant = "auto",
 		overrides = function()
 			if vim.o.background == "light" then
-				return { CursorLine = { bg = "#f5f5f7" } }
+				return {
+					CursorLine = { bg = "#f5f5f7" },
+					ColorColumn = { bg = "#ededef" },
+				}
 			else
-				return { CursorLine = { bg = "#1e2030" } }
+				return {
+					CursorLine = { bg = "#1e2030" },
+					ColorColumn = { bg = "#1e2030" },
+				}
 			end
 		end,
 	},

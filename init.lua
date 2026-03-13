@@ -1,5 +1,5 @@
 require("set")
 require("lazy_init")
-require("after")
+require("colorscheme")
 require("remap")
 require("autocmds")
