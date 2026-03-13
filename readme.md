@@ -85,6 +85,7 @@ Leader key is `<Space>`.
 | `<C-n>` / `<C-p>` | Next/prev item |
 | `<C-e>` | Dismiss menu |
 | `<C-k>` | Toggle signature help |
+| `<leader>ac` | Toggle auto-show menu (off by default) |
 
 ### Trouble
 
