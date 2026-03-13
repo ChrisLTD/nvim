@@ -52,7 +52,7 @@ vim.keymap.set("n", "<leader>Y", [["+Y]])
 
 -- Delete without copying into any register ("black hole" register).
 -- Useful when you don't want deletions to overwrite your yank buffer.
-vim.keymap.set({ "n", "v" }, "<leader>d", "\"_d")
+vim.keymap.set({ "n", "v" }, "<leader>d", '"_d')
 
 -- Make Ctrl-c in insert mode behave like Escape.
 -- Common personal preference, though not identical to real <Esc> in every case.
@@ -77,3 +77,15 @@ vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 -- Places cursor before the replacement flags so you can edit the command.
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 
+-- Toggle between dark and light mode
+vim.keymap.set("n", "<leader>dm", function()
+	if vim.g.colors_name == "cyberdream" then
+		vim.cmd("CyberdreamToggleMode")
+	else
+		if vim.o.background == "dark" then
+			vim.o.background = "light"
+		else
+			vim.o.background = "dark"
+		end
+	end
+end)

@@ -1,4 +1,5 @@
 require("set")
 require("lazy_init")
+require("after")
 require("remap")
 require("autocmds")
