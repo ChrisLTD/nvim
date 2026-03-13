@@ -32,6 +32,7 @@ lua/
 | [conform.nvim](https://github.com/stevearc/conform.nvim) | Code formatting |
 | [vim-fugitive](https://github.com/tpope/vim-fugitive) | Git integration |
 | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Git hunk signs and actions |
+| [blink.cmp](https://github.com/Saghen/blink.cmp) | Autocomplete (LSP, path, buffer) |
 | [flash.nvim](https://github.com/folke/flash.nvim) | Jump/motion navigation |
 | [rose-pine](https://github.com/rose-pine/neovim) | Colorscheme |
 
@@ -74,6 +75,16 @@ Leader key is `<Space>`.
 | `<leader>f` | Format buffer |
 | `[d` / `]d` | Prev/next diagnostic |
 | `<leader>e` | Float diagnostics |
+
+### Autocomplete (blink.cmp)
+
+| Key | Action |
+|-----|--------|
+| `<C-space>` | Open menu / open docs if menu open |
+| `<C-y>` | Accept selected item |
+| `<C-n>` / `<C-p>` | Next/prev item |
+| `<C-e>` | Dismiss menu |
+| `<C-k>` | Toggle signature help |
 
 ### Trouble
 
