@@ -1,4 +1,4 @@
 require("set")
-require("lazy")
+require("lazy_init")
 require("remap")
 require("autocmds")
