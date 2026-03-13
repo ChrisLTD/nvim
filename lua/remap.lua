@@ -79,13 +79,9 @@ vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><
 
 -- Toggle between dark and light mode
 vim.keymap.set("n", "<leader>dm", function()
-	if vim.g.colors_name == "cyberdream" then
-		vim.cmd("CyberdreamToggleMode")
+	if vim.o.background == "dark" then
+		vim.o.background = "light"
 	else
-		if vim.o.background == "dark" then
-			vim.o.background = "light"
-		else
-			vim.o.background = "dark"
-		end
+		vim.o.background = "dark"
 	end
 end)
