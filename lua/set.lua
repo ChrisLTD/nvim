@@ -116,7 +116,7 @@ vim.opt.colorcolumn = "80"
 function StatuslineBranch()
 	local branch = vim.fn.FugitiveHead()
 	-- filter out common branch prefixes
-	branch = branch:gsub("^chrisltd/", ""):gsub("^feature/eng-", "")
+	branch = branch:gsub("^chrisltd/", ""):gsub("^feature/eng%-", "")
 	-- truncate long branch names
 	return branch:sub(1, 30)
 end
