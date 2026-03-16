@@ -5,7 +5,7 @@ A minimal, Lua-based Neovim configuration focused on TypeScript and Go developme
 ## Prerequisites
 
 - **Neovim**: `brew install neovim`
-- **Nerd Font**: `brew install --cask font-jetbrains-mono-nerd-font` or `brew install --cask font-fira-mono-nerd-font`
+- **Nerd Font**: `brew install --cask font-jetbrains-mono-nerd-font` (use the NL no-ligatures version)
 - **ripgrep** (for Telescope live grep): `brew install ripgrep`
 - **tree-sitter-cli** (for tree sitter): `brew install tree-sitter`
 
