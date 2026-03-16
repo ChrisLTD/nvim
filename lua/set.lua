@@ -113,7 +113,22 @@ vim.opt.cursorline = true
 vim.opt.colorcolumn = "80"
 
 -- Status line
-vim.opt.statusline = " [%{mode()}] %f %m %r %= %{FugitiveHead()[:34]} %l:%c "
+function StatuslineBranch()
+	local branch = vim.fn.FugitiveHead()
+	branch = branch:gsub("^chrisltd/", ""):gsub("^feature/", "")
+	return branch:sub(1, 34)
+end
+
+function StatuslinePath()
+	local parent = vim.fn.expand("%:p:h:t")
+	local filename = vim.fn.expand("%:t")
+	if parent == "" or parent == "/" then
+		return filename
+	end
+	return parent .. "/" .. filename
+end
+
+vim.opt.statusline = " (%{mode()}) %{v:lua.StatuslinePath()} %m %r %= %{v:lua.StatuslineBranch()} %l:%c "
 
 -- =========================
 -- Performance & Responsiveness

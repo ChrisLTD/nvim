@@ -4,3 +4,17 @@
 vim.cmd("colorscheme cyberdream")
 -- vim.cmd("colorscheme oxocarbon")
 -- vim.cmd("colorscheme rose-pine")
+
+-- Set status line color
+local function set_statusline_bg()
+	local cursorline = vim.api.nvim_get_hl(0, { name = "CursorLine" })
+	local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
+
+	vim.api.nvim_set_hl(0, "StatusLine", {
+		bg = cursorline.bg or normal.bg,
+	})
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+	callback = set_statusline_bg,
+})
