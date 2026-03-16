@@ -1,10 +1,13 @@
--- Set the "leader" key to Space.
+--true Set the "leader" key to Space.
 -- Leader is a prefix used for your custom shortcuts, e.g. <leader>pv = <Space>pv
 -- leader is set in lazy.lua
 -- vim.g.mapleader = " "
 
 -- Open netrw/file explorer
-vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
+vim.keymap.set("n", "<leader>extrue", vim.cmd.Ex)
+
+-- Open telescope buffers
+vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "Find buffers" })
 
 -- In visual mode, move the selected block down one line,
 -- then reselect it and reindent it.
@@ -36,6 +39,10 @@ vim.keymap.set("n", "N", "Nzzzv")
 
 -- Reindent "a paragraph" text object, then return cursor to original spot.
 vim.keymap.set("n", "=ap", "ma=ap'a")
+
+-- Toggle comments
+vim.keymap.set("n", "\\\\", "gcc", { remap = true, desc = "Toggle comment line" })
+vim.keymap.set("x", "\\\\", "gc", { remap = true, desc = "Toggle comment selection" })
 
 -- Restart the LSP client(s) for the current buffer/project.
 vim.keymap.set("n", "<leader>zig", "<cmd>LspRestart<cr>")

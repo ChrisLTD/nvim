@@ -4,7 +4,7 @@ A minimal, Lua-based Neovim configuration focused on TypeScript and Go developme
 
 ## Prerequisites
 
-- **Neovim** (0.9+): `brew install neovim`
+- **Neovim**: `brew install neovim`
 - **Nerd Font**: `brew install --cask font-jetbrains-mono-nerd-font` or `brew install --cask font-fira-mono-nerd-font`
 - **ripgrep** (for Telescope live grep): `brew install ripgrep`
 - **tree-sitter-cli** (for tree sitter): `brew install tree-sitter`
@@ -58,12 +58,14 @@ Leader key is `<Space>`.
 |-----|--------|
 | `<leader>pf` | Find files |
 | `<C-p>` | Git files |
+| `<leader>fb` | Search buffers |
 | `<leader>ps` | Grep search |
 | `<leader>pws` | Grep word under cursor |
-| `<leader>pv` | Open file explorer (netrw) |
+| `<leader>ex` | Open file explorer (netrw) |
 | `<leader>vh` | Search help tags |
 | `s` | Flash jump |
 | `S` | Flash treesitter select |
+| `<C-d` / `<C-u>` | Half page up / down |
 
 ### LSP
 
@@ -119,6 +121,12 @@ Leader key is `<Space>`.
 | `<leader>p` | Paste over selection (preserve register) |
 | `<leader>d` | Delete to void register |
 | `<leader>s` | Search/replace word under cursor |
+| `\\` | Toggle comments |
+
+### Global
+
+| Key | Action |
+|-----|--------|
 | `<leader>dm` | Toggle dark/light mode |
 
 ## Notable Settings
