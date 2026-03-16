@@ -1,10 +1,10 @@
---true Set the "leader" key to Space.
+-- Set the "leader" key to Space.
 -- Leader is a prefix used for your custom shortcuts, e.g. <leader>pv = <Space>pv
 -- leader is set in lazy.lua
 -- vim.g.mapleader = " "
 
 -- Open netrw/file explorer
-vim.keymap.set("n", "<leader>extrue", vim.cmd.Ex)
+vim.keymap.set("n", "<leader>ex", vim.cmd.Ex)
 
 -- Open telescope buffers
 vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "Find buffers" })
