@@ -113,7 +113,7 @@ vim.opt.cursorline = true
 vim.opt.colorcolumn = "80"
 
 -- Status line
-vim.opt.statusline = " %f %m %r %= %{FugitiveHead()[:34]} %l:%c "
+vim.opt.statusline = " [%{mode()}] %f %m %r %= %{FugitiveHead()[:34]} %l:%c "
 
 -- =========================
 -- Performance & Responsiveness

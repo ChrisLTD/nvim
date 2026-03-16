@@ -36,6 +36,7 @@ lua/
 | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Git hunk signs and actions |
 | [blink.cmp](https://github.com/Saghen/blink.cmp) | Autocomplete (LSP, path, buffer) |
 | [flash.nvim](https://github.com/folke/flash.nvim) | Jump/motion navigation |
+| [arrow.nvim](https://github.com/otavioschwanck/arrow.nvim) | Bookmark files |
 | [cyberdream](https://github.com/scottmckendry/cyberdream.nvim) | Colorscheme |
 | [oxocarbon](https://github.com/nyoom-engineering/oxocarbon.nvim) | Colorscheme (alt) |
 | [rose-pine](https://github.com/rose-pine/neovim) | Colorscheme (alt) |
@@ -63,6 +64,8 @@ Leader key is `<Space>`.
 | `<leader>pws` | Grep word under cursor |
 | `<leader>ex` | Open file explorer (netrw) |
 | `<leader>vh` | Search help tags |
+| `;` | Open Arrow file bookmarks |
+| `b` | Open Arrow buffer bookmarks |
 | `s` | Flash jump |
 | `S` | Flash treesitter select |
 | `<C-d` / `<C-u>` | Half page up / down |
