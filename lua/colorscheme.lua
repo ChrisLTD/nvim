@@ -15,6 +15,7 @@ local function set_statusline_bg()
 	})
 end
 
+-- make sure the statusline bg is applied after all color scheme changes
 vim.api.nvim_create_autocmd("ColorScheme", {
 	callback = set_statusline_bg,
 })

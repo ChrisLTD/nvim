@@ -10,6 +10,7 @@ return {
 				return {
 					CursorLine = { bg = "#f5f5f7" },
 					ColorColumn = { bg = "#ededef" },
+					Visual = { bg = "#e0e0e4" },
 				}
 			else
 				return {

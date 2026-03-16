@@ -115,10 +115,13 @@ vim.opt.colorcolumn = "80"
 -- Status line
 function StatuslineBranch()
 	local branch = vim.fn.FugitiveHead()
+	-- filter out common branch prefixes
 	branch = branch:gsub("^chrisltd/", ""):gsub("^feature/", "")
-	return branch:sub(1, 34)
+	-- truncate long branch names
+	return branch:sub(1, 30)
 end
 
+-- show just the parent dir & current file
 function StatuslinePath()
 	local parent = vim.fn.expand("%:p:h:t")
 	local filename = vim.fn.expand("%:t")
