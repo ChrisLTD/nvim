@@ -78,6 +78,7 @@ Leader key is `<Space>`.
 | `gD` | Go to declaration |
 | `gr` | References |
 | `gi` | Go to implementation |
+| `<C-o>` | Go back |
 | `K` | Hover docs |
 | `<leader>rn` | Rename symbol |
 | `<leader>ca` | Code actions |
