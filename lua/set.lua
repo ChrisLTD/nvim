@@ -142,7 +142,8 @@ vim.opt.updatetime = 50
 
 -- Time to wait for a mapped sequence to complete
 -- Lower values make key mappings feel more responsive
-vim.opt.timeoutlen = 300
+-- Primeagen set it at 300
+vim.opt.timeoutlen = 750
 
 -- =========================
 -- Window Splitting
