@@ -167,3 +167,16 @@ vim.opt.foldlevelstart = 99
 
 -- Allow '@' in filenames (useful for module imports)
 vim.opt.isfname:append("@-@")
+
+-- =========================
+-- NetRW File Explorer changes
+-- =========================
+
+-- Disable banner
+vim.g.netrw_banner = 0
+
+-- Tree style view
+vim.g.netrw_liststyle = 3
+
+-- Don't open files in split
+vim.g.netrw_browse_split = 0
