@@ -6,7 +6,8 @@ return {
 	---@module 'blink.cmp'
 	---@type blink.cmp.Config
 	opts = {
-		keymap = { preset = "default" },
+		-- keymap = { preset = "default" },
+		keymap = { preset = "super-tab" }, -- tab to select
 		appearance = {
 			nerd_font_variant = "mono",
 		},

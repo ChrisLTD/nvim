@@ -91,7 +91,7 @@ Leader key is `<Space>`.
 | Key | Action |
 |-----|--------|
 | `<C-space>` | Open menu / open docs if menu open |
-| `<C-y>` | Accept selected item |
+| `<Tab>` | Accept selected item |
 | `<C-n>` / `<C-p>` | Next/prev item |
 | `<C-e>` | Dismiss menu |
 | `<C-k>` | Toggle signature help |
