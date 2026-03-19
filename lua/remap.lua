@@ -84,6 +84,11 @@ vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 -- Places cursor before the replacement flags so you can edit the command.
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 
+-- Toggle word wrap
+vim.keymap.set("n", "<leader>ww", function()
+	vim.wo.wrap = not vim.wo.wrap
+end, { desc = "Toggle word wrap" })
+
 -- Toggle between dark and light mode
 vim.keymap.set("n", "<leader>dm", function()
 	if vim.o.background == "dark" then

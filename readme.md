@@ -131,6 +131,7 @@ Leader key is `<Space>`.
 
 | Key | Action |
 |-----|--------|
+| `<leader>ww` | Toggle word wrap |
 | `<leader>dm` | Toggle dark/light mode |
 
 ## Notable Settings
