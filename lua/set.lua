@@ -131,7 +131,7 @@ function StatuslinePath()
 	return parent .. "/" .. filename
 end
 
-vim.opt.statusline = " %{toupper(mode())} %{v:lua.StatuslinePath()} %m %r %= %{v:lua.StatuslineBranch()} %l:%c %P "
+vim.opt.statusline = " %{toupper(mode())} %{v:lua.StatuslinePath()} %m %r %= %{v:lua.StatuslineBranch()} %c %P "
 
 -- =========================
 -- Performance & Responsiveness
