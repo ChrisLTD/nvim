@@ -61,6 +61,7 @@ Leader key is `<Space>`.
 | `<C-p>` | Git files |
 | `<leader>fb` | Search buffers |
 | `<leader>ps` | Grep search |
+| `<C-q>` | Persist Grep search results to quickfix list |
 | `<leader>pws` | Grep word under cursor |
 | `<leader>ex` | Open file explorer (netrw) |
 | `<leader>vh` | Search help tags |
