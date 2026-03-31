@@ -113,6 +113,9 @@ Leader key is `<Space>`.
 | Key | Action |
 |-----|--------|
 | `<leader>gs` | Git status (Fugitive) |
+| `s` | Stage file |
+| `u` | Unstage file |
+| `cc` | Commit |
 | `gq` | Close status pane |
 | `]h` / `[h` | Next/prev git hunk |
 | `<leader>hs` | Stage hunk |
