@@ -97,3 +97,10 @@ vim.keymap.set("n", "<leader>dm", function()
 		vim.o.background = "dark"
 	end
 end)
+
+-- Copy relative file path to system clipboard
+vim.keymap.set("n", "<leader>cp", function()
+	local path = vim.fn.fnamemodify(vim.fn.expand("%"), ":.")
+	vim.fn.setreg("+", path)
+	vim.notify(path, vim.log.levels.INFO, { title = "Copied path" })
+end, { desc = "Copy relative file path to clipboard" })

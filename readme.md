@@ -138,6 +138,7 @@ Leader key is `<Space>`.
 |-----|--------|
 | `<leader>ww` | Toggle word wrap |
 | `<leader>dm` | Toggle dark/light mode |
+| `<leader>cp` | Copy relative file path to clipboard |
 
 ## Notable Settings
 
