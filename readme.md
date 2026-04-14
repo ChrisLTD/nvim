@@ -43,7 +43,7 @@ lua/
 
 ## Language Support
 
-**LSP servers** (installed via Mason): `ts_ls` (TypeScript), `gopls` (Go)
+**LSP servers** (installed via Mason): `ts_ls` (TypeScript), `gopls` (Go), `eslint` (JS/TS linting)
 
 **Treesitter parsers**: JavaScript, TypeScript, TSX, Go, HTML, CSS, JSON, Lua, Vim
 
