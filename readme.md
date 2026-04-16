@@ -64,6 +64,10 @@ Leader key is `<Space>`.
 | `<C-q>` | Persist Grep search results to quickfix list |
 | `<leader>pws` | Grep word under cursor |
 | `-` | Open file explorer (netrw) |
+| `%` | New file (inside netrw) |
+| `d` | New directory (inside netrw) |
+| `R` | Rename file/directory (inside netrw) |
+| `D` | Delete file/directory (inside netrw) |
 | `<leader>vh` | Search help tags |
 | `;` | Open Arrow file bookmarks |
 | `b` | Open Arrow buffer bookmarks |
