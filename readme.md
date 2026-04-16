@@ -120,10 +120,23 @@ Leader key is `<Space>`.
 | `]h` / `[h` | Next/prev git hunk |
 | `<leader>hs` | Stage hunk |
 | `<leader>hr` | Reset hunk |
-| `<leader>dvo` | Diffview open |
-| `<leader>dvc` | Diffview close |
-| `<leader>dvh` | Diffview file history (current file) |
-| `<leader>dvH` | Diffview file history (repo) |
+| `<leader>gvo` | Diffview open |
+| `<leader>gvc` | Diffview close |
+| `<leader>gvh` | Diffview file history (current file) |
+| `<leader>gvH` | Diffview file history (repo) |
+
+#### Diffview merge conflict resolution
+
+These are diffview's built-in, buffer-local keymaps (active inside the 3-way merge view):
+
+| Key | Action |
+|-----|--------|
+| `<leader>co` | Choose OURS |
+| `<leader>ct` | Choose THEIRS |
+| `<leader>cb` | Choose BASE |
+| `<leader>ca` | Choose ALL |
+| `dx` | Delete conflict region |
+| `]x` / `[x` | Next/prev conflict |
 
 ### Editing
 
