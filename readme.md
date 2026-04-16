@@ -120,6 +120,10 @@ Leader key is `<Space>`.
 | `]h` / `[h` | Next/prev git hunk |
 | `<leader>hs` | Stage hunk |
 | `<leader>hr` | Reset hunk |
+| `<leader>dvo` | Diffview open |
+| `<leader>dvc` | Diffview close |
+| `<leader>dvh` | Diffview file history (current file) |
+| `<leader>dvH` | Diffview file history (repo) |
 
 ### Editing
 
