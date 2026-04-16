@@ -4,7 +4,7 @@
 -- vim.g.mapleader = " "
 
 -- Open netrw/file explorer
-vim.keymap.set("n", "<leader>ex", vim.cmd.Ex)
+vim.keymap.set("n", "-", vim.cmd.Ex)
 
 -- Open telescope buffers
 vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "Find buffers" })
