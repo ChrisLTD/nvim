@@ -125,6 +125,7 @@ Leader key is `<Space>`.
 | `<leader>hs` | Stage hunk |
 | `<leader>hr` | Reset hunk |
 | `<leader>gvo` | Diffview open |
+| `<leader>gvp` | Diffview PR review (vs `origin/main`) |
 | `<leader>gvc` | Diffview close |
 | `<leader>gvh` | Diffview file history (current file) |
 | `<leader>gvH` | Diffview file history (repo) |
