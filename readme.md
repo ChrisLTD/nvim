@@ -124,11 +124,11 @@ Leader key is `<Space>`.
 | `]h` / `[h` | Next/prev git hunk |
 | `<leader>hs` | Stage hunk |
 | `<leader>hr` | Reset hunk |
-| `<leader>Do` | Diffview open |
-| `<leader>Dp` | Diffview PR review (vs `origin/main`) |
-| `<leader>Dc` | Diffview close |
-| `<leader>Dh` | Diffview file history (current file) |
-| `<leader>DH` | Diffview file history (repo) |
+| `<leader>gvo` | Diffview open |
+| `<leader>gvp` | Diffview PR review (vs `origin/main`) |
+| `<leader>gvc` | Diffview close |
+| `<leader>gvh` | Diffview file history (current file) |
+| `<leader>gvH` | Diffview file history (repo) |
 
 #### Diffview merge conflict resolution
 
