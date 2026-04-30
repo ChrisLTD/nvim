@@ -10,6 +10,7 @@ local ensureInstalled = {
 	"typescript",
 	"tsx",
 	"lua",
+	"go",
 	"python",
 	"ruby", -- used by `Brewfile`
 	-- "rust",
