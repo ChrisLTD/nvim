@@ -71,7 +71,7 @@ return {
 				require("nvim-treesitter").install(ensureInstalled)
 			end, 2000)
 		else
-			local msg = "`tree-sitter-cli` not found. Skipping auto-install of parsers."
+			local msg = "`tree-sitter` not found. Skipping auto-install of parsers."
 			vim.notify(msg, vim.log.levels.WARN, { title = "Treesitter" })
 		end
 
