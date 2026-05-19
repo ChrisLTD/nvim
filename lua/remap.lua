@@ -98,6 +98,17 @@ vim.keymap.set("n", "<leader>dm", function()
 	end
 end)
 
+-- Go error handling snippets (only active in .go files)
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "go",
+	callback = function()
+		vim.keymap.set("n", "<leader>ee", "oif err != nil {<CR>}<Esc>Oreturn err<Esc>", { buffer = true })
+		vim.keymap.set("n", "<leader>ea", "oassert.NoError(err, \"\")<Esc>F\";a", { buffer = true })
+		vim.keymap.set("n", "<leader>ef", "oif err != nil {<CR>}<Esc>Olog.Fatalf(\"error: %s\\n\", err.Error())<Esc>jj", { buffer = true })
+		vim.keymap.set("n", "<leader>el", "oif err != nil {<CR>}<Esc>O.logger.Error(\"error\", \"error\", err)<Esc>F.;i", { buffer = true })
+	end,
+})
+
 -- Copy relative file path to system clipboard
 vim.keymap.set("n", "<leader>cp", function()
 	local path = vim.fn.fnamemodify(vim.fn.expand("%"), ":.")
