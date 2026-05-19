@@ -154,6 +154,17 @@ These are diffview's built-in, buffer-local keymaps (active inside the 3-way mer
 | `<leader>s` | Search/replace word under cursor |
 | `\\` | Toggle comments |
 
+### Go (active in .go files only)
+
+| Key | Action |
+|-----|--------|
+| `<leader>ee` | Insert `if err != nil { return err }` |
+| `<leader>ea` | Insert `assert.NoError(err, "")` |
+| `<leader>ef` | Insert `if err != nil { log.Fatalf(...) }` |
+| `<leader>el` | Insert `if err != nil { .logger.Error(...) }` |
+
+> **Note:** `<leader>e` (LSP float diagnostics) shares a prefix — Neovim will pause briefly before firing it.
+
 ### Global
 
 | Key | Action |
