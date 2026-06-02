@@ -40,6 +40,26 @@ return {
             -- Show available code actions (quick fixes, refactors)
             vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, o)
 
+            -- Add missing imports (filetype-aware: gopls / ts_ls)
+            vim.keymap.set('n', '<leader>ci', function()
+              local kind_by_ft = {
+                go              = 'source.organizeImports',
+                typescript      = 'source.addMissingImports.ts',
+                typescriptreact = 'source.addMissingImports.ts',
+                javascript      = 'source.addMissingImports.ts',
+                javascriptreact = 'source.addMissingImports.ts',
+              }
+              local kind = kind_by_ft[vim.bo.filetype]
+              if not kind then
+                vim.notify('No import action for filetype: ' .. vim.bo.filetype, vim.log.levels.WARN)
+                return
+              end
+              vim.lsp.buf.code_action({
+                context = { only = { kind }, diagnostics = {} },
+                apply = true,
+              })
+            end, vim.tbl_extend('force', o, { desc = 'Add missing imports' }))
+
             -- Format the current buffer
             vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format({ async = true }) end, o)
 
@@ -51,6 +71,24 @@ return {
 
             -- Show diagnostic details in a floating window
             vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, o)
+          end,
+        })
+
+        -- Run gopls' organizeImports synchronously before save (goimports behavior)
+        vim.api.nvim_create_autocmd('BufWritePre', {
+          pattern = '*.go',
+          callback = function()
+            local params = vim.lsp.util.make_range_params(0, 'utf-8')
+            params.context = { only = { 'source.organizeImports' }, diagnostics = {} }
+            local results = vim.lsp.buf_request_sync(0, 'textDocument/codeAction', params, 3000)
+            for cid, res in pairs(results or {}) do
+              for _, action in pairs(res.result or {}) do
+                if action.edit then
+                  local enc = (vim.lsp.get_client_by_id(cid) or {}).offset_encoding or 'utf-16'
+                  vim.lsp.util.apply_workspace_edit(action.edit, enc)
+                end
+              end
+            end
           end,
         })
       end,

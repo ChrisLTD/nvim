@@ -47,7 +47,7 @@ lua/
 
 **Treesitter parsers**: JavaScript, TypeScript, TSX, Go, HTML, CSS, JSON, Lua, Vim
 
-**Formatters**: prettier + eslint_d (JS/TS), gofmt (Go) -- format on save enabled
+**Formatters**: prettier + eslint_d (JS/TS), gofmt (Go) -- format on save enabled. Go also runs gopls `source.organizeImports` on save (adds missing imports, removes unused).
 
 ## Key Bindings
 
@@ -87,6 +87,7 @@ Leader key is `<Space>`.
 | `K` | Hover docs |
 | `<leader>rn` | Rename symbol |
 | `<leader>ca` | Code actions |
+| `<leader>ci` | Add missing imports (Go / TS) |
 | `<leader>f` | Format buffer |
 | `[d` / `]d` | Prev/next diagnostic |
 | `<leader>e` | Float diagnostics |
