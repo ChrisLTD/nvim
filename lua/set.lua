@@ -131,18 +131,26 @@ function StatuslinePath()
 	return parent .. "/" .. filename
 end
 
--- Error/warning counts for the current buffer, e.g. "E:2 W:1". Empty when clean.
+-- Error/warning counts for the current buffer, e.g. "E:2 W:1" with E in red and
+-- W in yellow (reusing the built-in DiagnosticError / DiagnosticWarn highlight
+-- groups so colors match virtual text and signs). Empty when clean.
 -- Info and hint are intentionally omitted -- too noisy and rarely actionable.
+-- Must be embedded in the statusline via %{%...%} (not %{...}) so the
+-- %#Group# highlight markers in the returned string are interpreted.
 function StatuslineDiagnostics()
 	local s = vim.diagnostic.severity
 	local counts = vim.diagnostic.count(0)
 	local parts = {}
-	if (counts[s.ERROR] or 0) > 0 then table.insert(parts, "E:" .. counts[s.ERROR]) end
-	if (counts[s.WARN]  or 0) > 0 then table.insert(parts, "W:" .. counts[s.WARN])  end
+	if (counts[s.ERROR] or 0) > 0 then
+		table.insert(parts, "%#DiagnosticError#E:" .. counts[s.ERROR] .. "%*")
+	end
+	if (counts[s.WARN] or 0) > 0 then
+		table.insert(parts, "%#DiagnosticWarn#W:" .. counts[s.WARN] .. "%*")
+	end
 	return table.concat(parts, " ")
 end
 
-vim.opt.statusline = " %{toupper(mode())} %{v:lua.StatuslinePath()} %m %r %= %{v:lua.StatuslineDiagnostics()} %{v:lua.StatuslineBranch()} %P "
+vim.opt.statusline = " %{toupper(mode())} %{v:lua.StatuslinePath()} %m %r %= %{v:lua.StatuslineBranch()} %P %{%v:lua.StatuslineDiagnostics()%} "
 
 -- =========================
 -- Performance & Responsiveness
