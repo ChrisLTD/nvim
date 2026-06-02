@@ -131,7 +131,18 @@ function StatuslinePath()
 	return parent .. "/" .. filename
 end
 
-vim.opt.statusline = " %{toupper(mode())} %{v:lua.StatuslinePath()} %m %r %= %{v:lua.StatuslineBranch()} %P "
+-- Error/warning counts for the current buffer, e.g. "E:2 W:1". Empty when clean.
+-- Info and hint are intentionally omitted -- too noisy and rarely actionable.
+function StatuslineDiagnostics()
+	local s = vim.diagnostic.severity
+	local counts = vim.diagnostic.count(0)
+	local parts = {}
+	if (counts[s.ERROR] or 0) > 0 then table.insert(parts, "E:" .. counts[s.ERROR]) end
+	if (counts[s.WARN]  or 0) > 0 then table.insert(parts, "W:" .. counts[s.WARN])  end
+	return table.concat(parts, " ")
+end
+
+vim.opt.statusline = " %{toupper(mode())} %{v:lua.StatuslinePath()} %m %r %= %{v:lua.StatuslineDiagnostics()} %{v:lua.StatuslineBranch()} %P "
 
 -- =========================
 -- Performance & Responsiveness
