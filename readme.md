@@ -176,7 +176,7 @@ These are diffview's built-in, buffer-local keymaps (active inside the 3-way mer
 
 ## Notable Settings
 
-- **Statusline**: shows mode, path, branch, position; right side shows diagnostic counts (`E:n W:n`) when the buffer has errors or warnings
+- **Statusline**: left shows mode and path; right shows branch, scroll percent, and colored diagnostic counts (`E:n` in red, `W:n` in yellow) when the buffer has errors or warnings
 - **Indentation**: 4 spaces
 - **Line numbers**: Relative + absolute
 - **Color column**: 80
