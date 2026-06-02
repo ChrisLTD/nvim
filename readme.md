@@ -74,6 +74,8 @@ Leader key is `<Space>`.
 | `s` | Flash jump |
 | `S` | Flash treesitter select |
 | `<C-d` / `<C-u>` | Half page up / down |
+| `<C-g>` | Show relative file path in command line |
+| `1<C-g>` | Show absolute file path in command line |
 
 ### LSP
 

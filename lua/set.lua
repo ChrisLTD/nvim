@@ -121,14 +121,20 @@ function StatuslineBranch()
 	return branch:sub(1, 30)
 end
 
--- show just the parent dir & current file
+-- Path relative to the project root (nearest ancestor with a VCS / build
+-- marker), always compacted with pathshorten 1 char per directory. Falls
+-- back to filename only when no project root is found.
 function StatuslinePath()
-	local parent = vim.fn.expand("%:p:h:t")
-	local filename = vim.fn.expand("%:t")
-	if parent == "" or parent == "/" then
-		return filename
+	local abs = vim.fn.expand("%:p")
+	if abs == "" then return "" end
+	local root = vim.fs.root(0, { ".git" })
+	local path
+	if root and abs:sub(1, #root + 1) == root .. "/" then
+		path = abs:sub(#root + 2)
+	else
+		path = vim.fn.fnamemodify(abs, ":t")
 	end
-	return parent .. "/" .. filename
+	return vim.fn.pathshorten(path, 1)
 end
 
 -- Current mode letter colored by mode family (reuses core syntax highlight
