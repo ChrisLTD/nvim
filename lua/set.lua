@@ -121,17 +121,19 @@ function StatuslineBranch()
 	return branch:sub(1, 30)
 end
 
--- Path relative to the project root (nearest ancestor with a VCS / build
--- marker), always compacted with pathshorten 1 char per directory. Falls
--- back to filename only when no project root is found.
+-- Path relative to the nearest .git ancestor (so it stays project-relative
+-- regardless of cwd). Falls back to the filename when the buffer isn't in a
+-- git repo. Always compacted with pathshorten 1 char per directory.
 function StatuslinePath()
 	local abs = vim.fn.expand("%:p")
+	-- Unnamed buffers (dashboard, scratch, :new without a name) -> show nothing.
 	if abs == "" then return "" end
 	local root = vim.fs.root(0, { ".git" })
 	local path
 	if root and abs:sub(1, #root + 1) == root .. "/" then
 		path = abs:sub(#root + 2)
 	else
+		-- :t = "tail" modifier -> just the filename, no directories.
 		path = vim.fn.fnamemodify(abs, ":t")
 	end
 	return vim.fn.pathshorten(path, 1)
