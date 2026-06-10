@@ -19,7 +19,12 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
 -- Run the current test file using Plenary's test runner.
 -- Uses a <Plug> mapping, so noremap must be false.
-vim.api.nvim_set_keymap("n", "<leader>tf", "<Plug>PlenaryTestFile", { noremap = false, silent = false })
+vim.api.nvim_set_keymap(
+	"n",
+	"<leader>tf",
+	"<Plug>PlenaryTestFile",
+	{ noremap = false, silent = false, desc = "Run test file (Plenary)" }
+)
 
 -- Join the current line with the next line,
 -- but preserve cursor position by saving/restoring mark z.
@@ -45,21 +50,21 @@ vim.keymap.set("n", "\\\\", "gcc", { remap = true, desc = "Toggle comment line" 
 vim.keymap.set("x", "\\\\", "gc", { remap = true, desc = "Toggle comment selection" })
 
 -- Restart the LSP client(s) for the current buffer/project.
-vim.keymap.set("n", "<leader>zig", "<cmd>LspRestart<cr>")
+vim.keymap.set("n", "<leader>zig", "<cmd>LspRestart<cr>", { desc = "Restart LSP" })
 
 -- Paste over a visual selection without overwriting your unnamed register.
 -- Very useful when replacing selected text with yanked text.
-vim.keymap.set("x", "<leader>p", [["_dP]])
+vim.keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste over selection (keep register)" })
 
 -- Yank to the system clipboard in normal and visual mode.
-vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
 
 -- Yank the current line to the system clipboard.
-vim.keymap.set("n", "<leader>Y", [["+Y]])
+vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipboard" })
 
 -- Delete without copying into any register ("black hole" register).
 -- Useful when you don't want deletions to overwrite your yank buffer.
-vim.keymap.set({ "n", "v" }, "<leader>d", '"_d')
+vim.keymap.set({ "n", "v" }, "<leader>d", '"_d', { desc = "Delete to void register" })
 
 -- Make Ctrl-c in insert mode behave like Escape.
 -- Common personal preference, though not identical to real <Esc> in every case.
@@ -75,14 +80,19 @@ vim.keymap.set("n", "<C-k>", "<cmd>cnext<CR>zz")
 vim.keymap.set("n", "<C-j>", "<cmd>cprev<CR>zz")
 
 -- Jump to next location list item and center the screen.
-vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
+vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz", { desc = "Next location list item" })
 
 -- Jump to previous location list item and center the screen.
-vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
+vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Prev location list item" })
 
 -- Start a search-and-replace for the word under cursor across the whole file.
 -- Places cursor before the replacement flags so you can edit the command.
-vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+vim.keymap.set(
+	"n",
+	"<leader>s",
+	[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+	{ desc = "Search/replace word under cursor" }
+)
 
 -- Toggle word wrap
 vim.keymap.set("n", "<leader>ww", function()
@@ -96,16 +106,36 @@ vim.keymap.set("n", "<leader>dm", function()
 	else
 		vim.o.background = "dark"
 	end
-end)
+end, { desc = "Toggle dark/light mode" })
 
 -- Go error handling snippets (only active in .go files)
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "go",
 	callback = function()
-		vim.keymap.set("n", "<leader>ee", "oif err != nil {<CR>}<Esc>Oreturn err<Esc>", { buffer = true })
-		vim.keymap.set("n", "<leader>ea", "oassert.NoError(err, \"\")<Esc>F\";a", { buffer = true })
-		vim.keymap.set("n", "<leader>ef", "oif err != nil {<CR>}<Esc>Olog.Fatalf(\"error: %s\\n\", err.Error())<Esc>jj", { buffer = true })
-		vim.keymap.set("n", "<leader>el", "oif err != nil {<CR>}<Esc>O.logger.Error(\"error\", \"error\", err)<Esc>F.;i", { buffer = true })
+		vim.keymap.set(
+			"n",
+			"<leader>ee",
+			"oif err != nil {<CR>}<Esc>Oreturn err<Esc>",
+			{ buffer = true, desc = "Insert err return" }
+		)
+		vim.keymap.set(
+			"n",
+			"<leader>ea",
+			'oassert.NoError(err, "")<Esc>F";a',
+			{ buffer = true, desc = "Insert assert.NoError" }
+		)
+		vim.keymap.set(
+			"n",
+			"<leader>ef",
+			'oif err != nil {<CR>}<Esc>Olog.Fatalf("error: %s\\n", err.Error())<Esc>jj',
+			{ buffer = true, desc = "Insert err log.Fatalf" }
+		)
+		vim.keymap.set(
+			"n",
+			"<leader>el",
+			'oif err != nil {<CR>}<Esc>O.logger.Error("error", "error", err)<Esc>F.;i',
+			{ buffer = true, desc = "Insert err logger.Error" }
+		)
 	end,
 })
 

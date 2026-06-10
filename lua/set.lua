@@ -127,7 +127,9 @@ end
 function StatuslinePath()
 	local abs = vim.fn.expand("%:p")
 	-- Unnamed buffers (dashboard, scratch, :new without a name) -> show nothing.
-	if abs == "" then return "" end
+	if abs == "" then
+		return ""
+	end
 	local root = vim.fs.root(0, { ".git" })
 	local path
 	if root and abs:sub(1, #root + 1) == root .. "/" then
@@ -144,17 +146,17 @@ end
 function StatuslineMode()
 	local m = vim.fn.mode()
 	local hl_by_mode = {
-		n       = "Function",        -- NORMAL
-		i       = "String",          -- INSERT  (typically green)
-		v       = "Constant",        -- VISUAL  (typically orange/magenta)
-		V       = "Constant",        -- V-LINE
-		["\22"] = "Constant",        -- V-BLOCK (CTRL-V)
-		s       = "Constant",        -- SELECT
-		S       = "Constant",
+		n = "Function", -- NORMAL
+		i = "String", -- INSERT  (typically green)
+		v = "Constant", -- VISUAL  (typically orange/magenta)
+		V = "Constant", -- V-LINE
+		["\22"] = "Constant", -- V-BLOCK (CTRL-V)
+		s = "Constant", -- SELECT
+		S = "Constant",
 		["\19"] = "Constant",
-		R       = "DiagnosticError", -- REPLACE (red)
-		c       = "DiagnosticWarn",  -- COMMAND (yellow)
-		t       = "String",          -- TERMINAL
+		R = "DiagnosticError", -- REPLACE (red)
+		c = "DiagnosticWarn", -- COMMAND (yellow)
+		t = "String", -- TERMINAL
 	}
 	local hl = hl_by_mode[m] or "Function"
 	return "%#" .. hl .. "#" .. m:upper() .. "%*"
@@ -163,7 +165,9 @@ end
 -- Modified flag: "[+]" in yellow when the buffer has unsaved changes, otherwise
 -- empty. Replaces the built-in %m so we can color it. Embed via %{%...%}.
 function StatuslineModified()
-	if vim.bo.modified then return "%#DiagnosticWarn#[+]%*" end
+	if vim.bo.modified then
+		return "%#DiagnosticWarn#[+]%*"
+	end
 	return ""
 end
 
@@ -186,7 +190,8 @@ function StatuslineDiagnostics()
 	return table.concat(parts, " ")
 end
 
-vim.opt.statusline = " %{%v:lua.StatuslineMode()%} %{v:lua.StatuslinePath()} %{%v:lua.StatuslineModified()%} %r %= %{v:lua.StatuslineBranch()} %P %{%v:lua.StatuslineDiagnostics()%} "
+vim.opt.statusline =
+	" %{%v:lua.StatuslineMode()%} %{v:lua.StatuslinePath()} %{%v:lua.StatuslineModified()%} %r %= %{v:lua.StatuslineBranch()} %P %{%v:lua.StatuslineDiagnostics()%} "
 
 -- =========================
 -- Performance & Responsiveness

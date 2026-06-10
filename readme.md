@@ -8,6 +8,7 @@ A minimal, Lua-based Neovim configuration focused on TypeScript and Go developme
 - **Nerd Font**: `brew install --cask font-jetbrains-mono-nerd-font` (use the NL no-ligatures version)
 - **ripgrep** (for Telescope live grep): `brew install ripgrep`
 - **tree-sitter** (for tree sitter): `brew install tree-sitter`
+- **Formatters**: prettier/eslint_d are resolved from each project's `node_modules/.bin`; stylua is installed via Mason (`:MasonInstall stylua`); gofmt ships with Go
 
 ## Structure
 
@@ -37,17 +38,20 @@ lua/
 | [blink.cmp](https://github.com/Saghen/blink.cmp) | Autocomplete (LSP, path, buffer) |
 | [flash.nvim](https://github.com/folke/flash.nvim) | Jump/motion navigation |
 | [arrow.nvim](https://github.com/otavioschwanck/arrow.nvim) | Bookmark files |
+| [which-key.nvim](https://github.com/folke/which-key.nvim) | Keybinding popup after pressing a prefix |
+| [undotree](https://github.com/mbbill/undotree) | Visual undo history browser |
+| [lazydev.nvim](https://github.com/folke/lazydev.nvim) | lua_ls setup for editing this config |
 | [cyberdream](https://github.com/scottmckendry/cyberdream.nvim) | Colorscheme |
 | [oxocarbon](https://github.com/nyoom-engineering/oxocarbon.nvim) | Colorscheme (alt) |
 | [rose-pine](https://github.com/rose-pine/neovim) | Colorscheme (alt) |
 
 ## Language Support
 
-**LSP servers** (installed via Mason): `ts_ls` (TypeScript), `gopls` (Go), `eslint` (JS/TS linting)
+**LSP servers** (installed via Mason): `ts_ls` (TypeScript), `gopls` (Go), `eslint` (JS/TS linting), `lua_ls` (Lua)
 
-**Treesitter parsers**: JavaScript, TypeScript, TSX, Go, HTML, CSS, JSON, Lua, Vim
+**Treesitter parsers**: JS/TS/TSX, Go, Lua, Python, Ruby, HTML, CSS, JSON, YAML, Markdown, Bash, and more -- see `lua/plugins/treesitter.lua` for the full list
 
-**Formatters**: prettier + eslint_d (JS/TS), gofmt (Go) -- format on save enabled. Go also runs gopls `source.organizeImports` on save (adds missing imports, removes unused).
+**Formatters**: prettier + eslint_d (JS/TS), gofmt (Go), stylua (Lua) -- format on save enabled. Go also runs gopls `source.organizeImports` on save (adds missing imports, removes unused).
 
 ## Key Bindings
 
@@ -90,8 +94,8 @@ Leader key is `<Space>`.
 | `<leader>rn` | Rename symbol |
 | `<leader>ca` | Code actions |
 | `<leader>ci` | Add missing imports (Go / TS) |
-| `<leader>f` | Format buffer |
-| `[d` / `]d` | Prev/next diagnostic |
+| `<leader>f` | Format buffer (conform, falls back to LSP) |
+| `[d` / `]d` | Prev/next diagnostic (built-in) |
 | `<leader>e` | Float diagnostics |
 
 ### Autocomplete (blink.cmp)
@@ -175,6 +179,9 @@ These are diffview's built-in, buffer-local keymaps (active inside the 3-way mer
 | `<leader>ww` | Toggle word wrap |
 | `<leader>dm` | Toggle dark/light mode |
 | `<leader>cp` | Copy relative file path to clipboard |
+| `<leader>u` | Toggle undotree |
+
+Pressing `<leader>` (or any prefix) and pausing shows a which-key popup of available bindings.
 
 ## Notable Settings
 
