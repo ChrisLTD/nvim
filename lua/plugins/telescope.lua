@@ -10,7 +10,7 @@ return {
 	config = function()
 		require("telescope").setup({
 			defaults = {
-				path_display = { "truncate" },
+				path_display = { "smart" },
 			},
 		})
 
