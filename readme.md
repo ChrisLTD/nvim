@@ -18,6 +18,7 @@ lua/
   lazy_init.lua         -- Lazy.nvim plugin manager bootstrap
   colorscheme.lua       -- Active colorscheme selection
   set.lua               -- Editor options
+  statusline.lua        -- Custom statusline
   remap.lua             -- Custom keybindings
   autocmds.lua          -- Autocommands (e.g. trim trailing whitespace)
 ```

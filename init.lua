@@ -1,4 +1,5 @@
 require("set")
+require("statusline")
 require("lazy_init")
 require("colorscheme")
 require("remap")
