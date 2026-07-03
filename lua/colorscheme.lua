@@ -19,3 +19,7 @@ end
 vim.api.nvim_create_autocmd("ColorScheme", {
 	callback = set_statusline_bg,
 })
+
+-- The colorscheme was applied above, before the autocmd existed, so run the
+-- fix once for the initial load as well.
+set_statusline_bg()
