@@ -223,8 +223,10 @@ vim.opt.splitbelow = true
 -- Clipboard & Input
 -- =========================
 
--- Use the system clipboard for all yank, delete, and paste operations
-vim.opt.clipboard = "unnamedplus"
+-- Keep yanks/deletes in Neovim's own registers; use <leader>y / <leader>Y
+-- (remap.lua) to copy to the system clipboard explicitly. Syncing everything
+-- with clipboard=unnamedplus defeated <leader>d's "delete without clobbering
+-- the yank" behavior.
 
 -- Enable mouse support in all modes
 vim.opt.mouse = "a"
