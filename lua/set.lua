@@ -58,8 +58,12 @@ vim.opt.swapfile = false
 -- Disable backup files
 vim.opt.backup = false
 
--- Store persistent undo history in this directory
-vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
+-- Store persistent undo history in this directory.
+-- Neovim does not create custom undo directories, so make sure it exists --
+-- otherwise persistent undo silently fails on a fresh machine.
+local undodir = os.getenv("HOME") .. "/.vim/undodir"
+vim.fn.mkdir(undodir, "p")
+vim.opt.undodir = undodir
 
 -- Enable persistent undo between sessions
 vim.opt.undofile = true
