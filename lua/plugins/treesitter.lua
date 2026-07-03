@@ -59,6 +59,7 @@ local ensureInstalled = {
 
 return {
 	"nvim-treesitter/nvim-treesitter",
+	branch = "main", -- this config uses the rewritten main-branch API, not the frozen master
 	lazy = false,
 	build = ":TSUpdate",
 	opts = {
@@ -98,16 +99,7 @@ return {
 				-- https://github.com/stsewd/tree-sitter-comment/issues/22
 				-- https://github.com/LuaLS/lua-language-server/issues/1809
 				vim.api.nvim_set_hl(0, "@lsp.type.comment", {})
-
-				-- Define `@comment.bold` for `queries/comment/highlights.scm`
-				vim.api.nvim_set_hl(0, "@comment.bold", { bold = true })
 			end,
-		})
-
-		-- `ts_query_ls`: use the custom directory set in the treesitter config
-		local tsDir = require("nvim-treesitter.config").get_install_dir("parser")
-		vim.lsp.config("ts_query_ls", {
-			init_options = { parser_install_directories = { tsDir } },
 		})
 	end,
 }
