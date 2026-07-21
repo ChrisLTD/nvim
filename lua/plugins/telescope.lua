@@ -10,7 +10,7 @@ return {
 	config = function()
 		require("telescope").setup({
 			defaults = {
-				path_display = { "smart" },
+				path_display = { filename_first = { reverse_directories = false } },
 			},
 		})
 
