@@ -1,5 +1,15 @@
 return {
-	{ "mason-org/mason.nvim", opts = {} },
+	{
+		"mason-org/mason.nvim",
+		opts = {
+			-- Same two-week minimum release age that scripts/update-plugins applies
+			-- to lazy plugins. Covers Mason's npm-sourced packages only; anything
+			-- installed from a GitHub release or `go install` has no equivalent knob.
+			npm = {
+				install_args = { "--before", os.date("%Y-%m-%d", os.time() - 14 * 86400) },
+			},
+		},
+	},
 
 	{
 		"mason-org/mason-lspconfig.nvim",
