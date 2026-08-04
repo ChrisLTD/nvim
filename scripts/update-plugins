@@ -1,0 +1,296 @@
+#!/usr/bin/env bash
+#
+# Update lazy-lock.json to the newest commit of each plugin that this machine has
+# been able to see for at least MIN_AGE_DAYS. This is the lazy.nvim equivalent of
+# pnpm's minimumReleaseAge: it leaves a window in which a compromised plugin
+# release can be spotted and yanked before it reaches this machine.
+#
+# Eligibility is based on when we first observed a commit, recorded in
+# plugin-first-seen.json, not on its committer date. Committer dates are set by
+# whoever made the commit, so they cannot establish how long something has been
+# public: pushing a commit today stamped three weeks ago is trivial.
+#
+# Every run records what it sees, including dry runs, so the first run on a new
+# checkout updates nothing and starts the clock instead.
+#
+# lazy.nvim has no minimum-release-age setting (folke/lazy.nvim#2141 is open), so
+# :Lazy update and :Lazy sync are blocked in lua/lazy_init.lua and this replaces them.
+#
+# Usage:
+#   scripts/update-plugins            # observe and show what is eligible
+#   scripts/update-plugins --apply    # write the lockfile and check plugins out
+#   scripts/update-plugins --days 30  # override the minimum age
+#
+set -euo pipefail
+
+CONFIG_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+LOCKFILE="${LOCKFILE:-$CONFIG_DIR/lazy-lock.json}"
+SEENFILE="${SEENFILE:-$CONFIG_DIR/plugin-first-seen.json}"
+
+MIN_AGE_DAYS=14
+APPLY=0
+
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+	--apply) APPLY=1 ;;
+	--days)
+		if [[ $# -lt 2 ]]; then
+			echo "--days requires a non-negative integer" >&2
+			exit 1
+		fi
+		if [[ ! "$2" =~ ^[0-9]+$ ]]; then
+			echo "--days requires a non-negative integer, got: $2" >&2
+			exit 1
+		fi
+		MIN_AGE_DAYS="$2"
+		shift
+		;;
+	-h | --help)
+		# Two expressions rather than `\?`, which BSD sed treats literally
+		sed -n '3,24p' "${BASH_SOURCE[0]}" | sed -e 's/^# //' -e 's/^#$//'
+		exit 0
+		;;
+	*)
+		echo "unknown argument: $1" >&2
+		exit 1
+		;;
+	esac
+	shift
+done
+
+# Ask lazy.nvim itself which plugins are safe to move. Anything pinned to a tag, a
+# semver range or an explicit commit must not be walked, or we would drag it off
+# its pin onto an arbitrary branch commit.
+QUERY="$(mktemp -t lazy-plugins-XXXXXX.lua)"
+trap 'rm -f "$QUERY"' EXIT
+cat >"$QUERY" <<'LUA'
+local out = {}
+for name, p in pairs(require("lazy.core.config").plugins) do
+	if p._.installed and not p._.is_local then
+		local pin = p.pin and "pin"
+			or p.commit and "commit"
+			or p.tag and "tag"
+			or (p.version ~= nil and p.version ~= false) and "version"
+			or nil
+		table.insert(out, {
+			name = name,
+			dir = p.dir,
+			branch = p.branch or require("lazy.manage.git").get_branch(p),
+			-- false rather than nil: vim.json.encode drops nil-valued keys
+			pinned = pin or false,
+		})
+	end
+end
+io.stdout:write("@@PLUGINS@@" .. vim.json.encode(out) .. "\n")
+LUA
+
+# -c luafile rather than -l: `nvim -l` runs before the user config, so lazy would
+# not be on the runtimepath yet.
+if ! NVIM_OUTPUT="$(nvim --headless -c "luafile $QUERY" -c 'qa!' 2>&1)"; then
+	echo "could not read the plugin list from nvim:" >&2
+	printf '%s\n' "$NVIM_OUTPUT" >&2
+	exit 1
+fi
+
+PLUGINS_JSON="$(printf '%s\n' "$NVIM_OUTPUT" | sed -n 's/^@@PLUGINS@@//p')"
+if [[ -z "$PLUGINS_JSON" ]]; then
+	echo "nvim did not report a plugin list:" >&2
+	printf '%s\n' "$NVIM_OUTPUT" >&2
+	exit 1
+fi
+
+export MIN_AGE_DAYS APPLY LOCKFILE SEENFILE PLUGINS_JSON
+
+python3 <<'PY'
+import json, os, subprocess, sys, tempfile
+from datetime import datetime, timedelta, timezone
+
+min_age = int(os.environ["MIN_AGE_DAYS"])
+apply_changes = os.environ["APPLY"] == "1"
+lockfile = os.environ["LOCKFILE"]
+seenfile = os.environ["SEENFILE"]
+plugins = {p["name"]: p for p in json.loads(os.environ["PLUGINS_JSON"])}
+
+TS = "%Y-%m-%dT%H:%M:%SZ"
+now = datetime.now(timezone.utc).replace(microsecond=0)
+cutoff = timedelta(days=min_age)
+
+with open(lockfile) as f:
+    lock = json.load(f)
+
+try:
+    with open(seenfile) as f:
+        seen = json.load(f)
+except FileNotFoundError:
+    seen = {}
+
+
+def git(dirname, *args):
+    result = subprocess.run(
+        ["git", "-C", dirname, *args], check=True, capture_output=True, text=True
+    )
+    return result.stdout.strip()
+
+
+def terminal_safe(value):
+    # Commit subjects are remote-controlled. Strip C0, DEL and C1 so a compromised
+    # repo cannot use escape sequences to rewrite what this script prints.
+    return "".join(
+        ch for ch in value if ch == "\t" or (0x20 <= ord(ch) < 0x7F) or ord(ch) > 0x9F
+    )
+
+
+def age_of(stamp):
+    return now - datetime.strptime(stamp, TS).replace(tzinfo=timezone.utc)
+
+
+changes, skipped, pending, unchanged = [], [], [], 0
+
+for name in sorted(lock):
+    entry = lock[name]
+    plugin = plugins.get(name)
+    if plugin is None:
+        skipped.append((name, "not installed"))
+        continue
+    if plugin.get("pinned"):
+        skipped.append((name, "pinned by %s" % plugin["pinned"]))
+        continue
+
+    d, branch = plugin["dir"], plugin.get("branch")
+    if not branch:
+        skipped.append((name, "no tracking branch"))
+        continue
+
+    try:
+        subprocess.run(
+            ["git", "-C", d, "fetch", "--quiet", "--tags", "--force", "origin"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        remote = "origin/%s" % branch
+        # Reject anything that is not a fast-forward from what we already trust.
+        is_ff = subprocess.run(
+            ["git", "-C", d, "merge-base", "--is-ancestor", entry["commit"], remote],
+            capture_output=True,
+        ).returncode == 0
+        if not is_ff:
+            skipped.append((name, "%s is not a fast-forward -- history rewritten?" % remote))
+            continue
+
+        # First-parent only: without it rev-list can return a commit from a merged
+        # side branch, which is not what a lockfile tracking the branch should move to.
+        candidates = git(
+            d, "rev-list", "--first-parent", "%s..%s" % (entry["commit"], remote)
+        ).split()
+    except subprocess.CalledProcessError as exc:
+        detail = "; ".join(
+            terminal_safe(line).strip()
+            for line in exc.stderr.strip().splitlines()
+            if line.strip()
+        )
+        skipped.append((name, detail or "git command failed"))
+        continue
+
+    if not candidates:
+        unchanged += 1
+        seen.pop(name, None)
+        continue
+
+    # Record anything new, then drop shas that are no longer candidates so the
+    # log does not grow without bound.
+    log = seen.get(name, {})
+    fresh = [sha for sha in candidates if sha not in log]
+    for sha in fresh:
+        log[sha] = now.strftime(TS)
+    log = {sha: log[sha] for sha in candidates}
+    if log:
+        seen[name] = log
+    else:
+        seen.pop(name, None)
+
+    target = next((sha for sha in candidates if age_of(log[sha]) >= cutoff), None)
+    if target is None:
+        soonest = min(cutoff - age_of(log[sha]) for sha in candidates)
+        pending.append((name, len(candidates), len(fresh), soonest))
+        continue
+
+    try:
+        subject = terminal_safe(git(d, "log", "-1", "--format=%s", target))
+    except subprocess.CalledProcessError:
+        subject = "(could not read commit subject)"
+    # candidates is newest-first, so everything before the target is a newer
+    # commit we are declining to take yet.
+    held = candidates.index(target)
+    changes.append((name, entry["commit"], target, age_of(log[target]), subject,
+                    len(candidates) - held, held, len(fresh)))
+    if apply_changes:
+        lock[name]["commit"] = target
+
+
+def days(delta):
+    return max(0, int(delta.total_seconds() // 86400))
+
+
+for name, old, new, observed, subject, ahead, held, fresh in changes:
+    note = ", %d newer held back" % held if held else ""
+    print("%s  %s -> %s  (+%d commits, observed %dd ago%s)"
+          % (name, old[:8], new[:8], ahead, days(observed), note))
+    print("    %s" % subject)
+
+for name, total, fresh, soonest in pending:
+    print("wait %s: %d commit(s) not yet visible for %dd, next eligible in %dd"
+          % (name, total, min_age, days(soonest) + 1))
+
+for name, why in skipped:
+    print("skip %s: %s" % (name, why))
+
+newly = sum(f for *_, f in changes) + sum(f for _, _, f, _ in pending)
+print("\n%d to update, %d already current, %d waiting, %d skipped (%d newly observed)"
+      % (len(changes), unchanged, len(pending), len(skipped), newly))
+
+
+def write_atomic(path, text):
+    directory = os.path.dirname(os.path.abspath(path))
+    with tempfile.NamedTemporaryFile(
+        mode="w", dir=directory, prefix=".%s." % os.path.basename(path), delete=False
+    ) as f:
+        temp = f.name
+        f.write(text)
+    os.replace(temp, path)
+
+
+# Always persist observations, including on a dry run: watching is what starts the
+# clock, and only recording on --apply would mean nothing ever becomes eligible.
+write_atomic(seenfile, json.dumps(
+    {n: dict(sorted(seen[n].items())) for n in sorted(seen)}, indent=2) + "\n")
+
+if not apply_changes:
+    if changes:
+        print("dry run -- re-run with --apply to write the lockfile")
+    sys.exit(0)
+
+if changes:
+    missing = [n for n in lock if "branch" not in lock[n]]
+    if missing:
+        sys.exit("lockfile entries missing a branch: %s" % ", ".join(sorted(missing)))
+    # Match lazy.nvim's own lockfile format exactly (lua/lazy/manage/lock.lua) so
+    # this script and :Lazy restore never fight over formatting.
+    lines = ['  %s: { "branch": %s, "commit": %s }'
+             % (json.dumps(n), json.dumps(lock[n]["branch"]), json.dumps(lock[n]["commit"]))
+             for n in sorted(lock)]
+    write_atomic(lockfile, "{\n" + ",\n".join(lines) + "\n}\n")
+    print("wrote %s" % lockfile)
+PY
+
+if [[ "$APPLY" == "1" ]]; then
+	echo
+	echo "checking plugins out to the lockfile..."
+	if ! RESTORE_OUTPUT="$(nvim --headless "+Lazy! restore" +qa 2>&1)"; then
+		echo "Lazy restore failed:" >&2
+		printf '%s\n' "$RESTORE_OUTPUT" >&2
+		exit 1
+	fi
+	echo "done -- review 'git diff lazy-lock.json' before committing"
+fi

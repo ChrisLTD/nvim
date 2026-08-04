@@ -1,11 +1,24 @@
 return {
-	{ "mason-org/mason.nvim", opts = {} },
+	{
+		"mason-org/mason.nvim",
+		opts = {
+			-- Same two-week minimum release age that scripts/update-plugins applies
+			-- to lazy plugins. Covers Mason's npm-sourced packages only; anything
+			-- installed from a GitHub release or `go install` has no equivalent knob.
+			npm = {
+				install_args = { "--before", os.date("%Y-%m-%d", os.time() - 14 * 86400) },
+			},
+		},
+	},
 
 	{
 		"mason-org/mason-lspconfig.nvim",
 		dependencies = { "neovim/nvim-lspconfig", "saghen/blink.cmp" },
 		opts = {
-			ensure_installed = { "ts_ls", "gopls", "eslint", "lua_ls" },
+			-- eslint and oxlint each require their own config file to be present
+			-- (oxlint also sets workspace_required), so they self-select per repo
+			-- while projects migrate from one to the other.
+			ensure_installed = { "ts_ls", "gopls", "eslint", "oxlint", "lua_ls" },
 		},
 		config = function(_, opts)
 			require("mason-lspconfig").setup(opts)
