@@ -8,7 +8,7 @@ A minimal, Lua-based Neovim configuration focused on TypeScript and Go developme
 - **Nerd Font**: `brew install --cask font-jetbrains-mono-nerd-font` (use the NL no-ligatures version)
 - **ripgrep** (for Telescope live grep): `brew install ripgrep`
 - **tree-sitter** (for tree sitter): `brew install tree-sitter`
-- **Formatters**: prettier/eslint_d are resolved from each project's `node_modules/.bin`; stylua is installed via Mason (`:MasonInstall stylua`); gofmt ships with Go
+- **Formatters and linters**: oxfmt, prettier and eslint_d are resolved from each project's `node_modules/.bin`; oxlint from `node_modules/.bin` or Mason; stylua is installed via Mason (`:MasonInstall stylua`); gofmt ships with Go
 
 ## Structure
 
@@ -47,11 +47,19 @@ lua/
 
 ## Language Support
 
-**LSP servers** (installed via Mason): `ts_ls` (TypeScript), `gopls` (Go), `eslint` (JS/TS linting), `lua_ls` (Lua)
+**LSP servers** (installed via Mason): `ts_ls` (TypeScript), `gopls` (Go), `eslint` and `oxlint` (JS/TS linting), `lua_ls` (Lua)
+
+`eslint` and `oxlint` each require their own config file in the project before they attach, so they self-select per repo as projects migrate from one to the other. `oxlint` also provides `:LspOxlintFixAll`.
 
 **Treesitter parsers**: JS/TS/TSX, Go, Lua, Python, Ruby, HTML, CSS, JSON, YAML, Markdown, Bash, and more -- see `lua/plugins/treesitter.lua` for the full list
 
-**Formatters**: prettier + eslint_d (JS/TS), gofmt (Go), stylua (Lua) -- format on save enabled. Go also runs gopls `source.organizeImports` on save (adds missing imports, removes unused).
+**Formatters**: gofmt (Go), stylua (Lua) -- format on save enabled. Go also runs gopls `source.organizeImports` on save (adds missing imports, removes unused).
+
+For JS/TS the chain is picked per project from the config files present: `oxlint --fix` + oxfmt when the repo has `.oxlintrc.json` / `.oxfmtrc.json`, otherwise eslint_d + prettier. The fixer runs before the formatter, so prettier's output wins on the eslint path (it used to run first).
+
+A repo counts as having adopted a tool if it has that tool's config file, names it in `package.json`, or configures it through Vite+. Every ancestor manifest is checked, not just the nearest, so a monorepo package inherits a toolchain declared in the workspace root. The manifest and Vite+ checks are matched narrowly so neighbouring repos aren't caught: `vite.config.ts` only counts when it mentions `vite-plus` and a `lint:` or `fmt:` field, and the manifest is matched on the quoted package name, so `eslint-plugin-oxlint` in a repo still running eslint doesn't read as oxlint.
+
+There's no detection on the eslint side -- it's the fallback, not a decision. That works because prettier and eslint_d are only ever resolved from a project's `node_modules/.bin`: in a repo that uses neither, conform finds neither and `lsp_format = "fallback"` takes over. Installing prettier or eslint_d globally would break that, and they'd start running in repos that never asked for them. Keep them project-local, or teach `js_formatters` to detect them the way it detects oxc.
 
 ## Key Bindings
 
