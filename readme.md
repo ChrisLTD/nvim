@@ -8,7 +8,7 @@ A minimal, Lua-based Neovim configuration focused on TypeScript and Go developme
 - **Nerd Font**: `brew install --cask font-jetbrains-mono-nerd-font` (use the NL no-ligatures version)
 - **ripgrep** (for Telescope live grep): `brew install ripgrep`
 - **tree-sitter** (for tree sitter): `brew install tree-sitter`
-- **Formatters**: prettier/eslint_d are resolved from each project's `node_modules/.bin`; stylua is installed via Mason (`:MasonInstall stylua`); gofmt ships with Go
+- **Formatters/linters**: oxlint, oxfmt, prettier, eslint_d and cspell are resolved from each project's `node_modules/.bin`; stylua is installed via Mason (`:MasonInstall stylua`); gofmt ships with Go
 
 ## Structure
 
@@ -20,7 +20,46 @@ lua/
   set.lua               -- Editor options
   remap.lua             -- Custom keybindings
   autocmds.lua          -- Autocommands (e.g. trim trailing whitespace)
+scripts/
+  update-plugins        -- Age-gated plugin updates (replaces :Lazy update)
+plugin-first-seen.json  -- When this machine first saw each candidate commit
 ```
+
+## Updating plugins
+
+`:Lazy update` and `:Lazy sync` are disabled. lazy.nvim has no minimum-release-age
+setting ([#2141](https://github.com/folke/lazy.nvim/issues/2141) is open), so updates
+go through a script that only moves `lazy-lock.json` to commits that have been public
+for at least two weeks -- the same idea as pnpm's `minimumReleaseAge`. That leaves a
+window for a compromised release to be spotted and yanked before it lands here.
+
+```sh
+scripts/update-plugins            # observe, and show what is eligible to move
+scripts/update-plugins --apply    # write the lockfile, then check plugins out
+scripts/update-plugins --days 30  # override the minimum age
+```
+
+Plugins pinned by `tag`, `version`, `commit` or `pin` are skipped -- walking those back
+by date would drag them off their pin. Review `git diff lazy-lock.json` and commit it.
+
+`:Lazy install`, `:Lazy restore`, `:Lazy clean` and `:Lazy check` still work as normal.
+
+Eligibility is based on when this machine first saw a commit, recorded in
+`plugin-first-seen.json`, not on the commit's own date. Committer dates are set by
+whoever made the commit, so they can't establish how long something has been public:
+pushing a commit today stamped three weeks ago takes one environment variable. Every
+run records what it sees, including dry runs, so the first run on a fresh checkout
+updates nothing and starts the clock instead. The script also refuses anything that
+isn't a fast-forward from the locked commit.
+
+Because observation is what starts the clock, the effective delay is roughly the
+interval between runs plus two weeks. That errs on the safe side.
+
+Mason's npm packages get the same two-week window through `npm --before` (set in
+`lua/plugins/lsp.lua`). Mason packages installed from a GitHub release or `go install`
+have no equivalent knob. In practice the binaries that run against project code
+(oxlint, oxfmt, cspell, prettier) come from the project's own `node_modules`, so the
+coverage that matters most is whatever the project's package manager enforces.
 
 ## Plugins
 
@@ -33,6 +72,7 @@ lua/
 | [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) | Fuzzy finder |
 | [trouble.nvim](https://github.com/folke/trouble.nvim) | Diagnostics viewer |
 | [conform.nvim](https://github.com/stevearc/conform.nvim) | Code formatting |
+| [nvim-lint](https://github.com/mfussenegger/nvim-lint) | Linting for tools without an LSP (cspell) |
 | [vim-fugitive](https://github.com/tpope/vim-fugitive) | Git integration |
 | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Git hunk signs and actions |
 | [blink.cmp](https://github.com/Saghen/blink.cmp) | Autocomplete (LSP, path, buffer) |
@@ -47,11 +87,17 @@ lua/
 
 ## Language Support
 
-**LSP servers** (installed via Mason): `ts_ls` (TypeScript), `gopls` (Go), `eslint` (JS/TS linting), `lua_ls` (Lua)
+**LSP servers** (installed via Mason): `ts_ls` (TypeScript), `gopls` (Go), `eslint` and `oxlint` (JS/TS linting), `lua_ls` (Lua)
+
+`eslint` and `oxlint` each require their own config file in the project before they attach, so they self-select per repo as projects migrate from one to the other. `oxlint` also provides `:LspOxlintFixAll`.
 
 **Treesitter parsers**: JS/TS/TSX, Go, Lua, Python, Ruby, HTML, CSS, JSON, YAML, Markdown, Bash, and more -- see `lua/plugins/treesitter.lua` for the full list
 
-**Formatters**: prettier + eslint_d (JS/TS), gofmt (Go), stylua (Lua) -- format on save enabled. Go also runs gopls `source.organizeImports` on save (adds missing imports, removes unused).
+**Formatters**: gofmt (Go), stylua (Lua) -- format on save enabled. Go also runs gopls `source.organizeImports` on save (adds missing imports, removes unused).
+
+For JS/TS the chain is picked per project from the config files present: `oxlint --fix` + oxfmt when the repo has `.oxlintrc.json` / `.oxfmtrc.json`, otherwise eslint_d + prettier. The fixer runs before the formatter.
+
+**Spell checking**: cspell runs via nvim-lint on read, write and leaving insert mode, but only in projects that have a cspell config. Diagnostics are `INFO` severity so they stay out of the statusline's error/warning counts. `<leader>aw` yanks the word under the cursor and opens the nearest `cspell.json` at its words list, ready to paste.
 
 ## Key Bindings
 
@@ -179,6 +225,7 @@ These are diffview's built-in, buffer-local keymaps (active inside the 3-way mer
 | `<leader>ww` | Toggle word wrap |
 | `<leader>dm` | Toggle dark/light mode |
 | `<leader>cp` | Copy relative file path to clipboard |
+| `<leader>aw` | Yank word under cursor, open the project's `cspell.json` at its words list |
 | `<leader>u` | Toggle undotree |
 
 Pressing `<leader>` (or any prefix) and pausing shows a which-key popup of available bindings.
