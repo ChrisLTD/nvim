@@ -8,7 +8,7 @@ A minimal, Lua-based Neovim configuration focused on TypeScript and Go developme
 - **Nerd Font**: `brew install --cask font-jetbrains-mono-nerd-font` (use the NL no-ligatures version)
 - **ripgrep** (for Telescope live grep): `brew install ripgrep`
 - **tree-sitter** (for tree sitter): `brew install tree-sitter`
-- **Formatters and linters**: oxfmt, prettier and eslint_d are resolved from each project's `node_modules/.bin`; oxlint from `node_modules/.bin` or Mason; stylua is installed via Mason (`:MasonInstall stylua`); gofmt ships with Go
+- **Formatters and linters**: oxfmt, prettier, eslint_d and cspell are resolved from each project's `node_modules/.bin`; oxlint from `node_modules/.bin` or Mason; stylua is installed via Mason (`:MasonInstall stylua`); gofmt ships with Go
 
 ## Structure
 
@@ -33,6 +33,7 @@ lua/
 | [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) | Fuzzy finder |
 | [trouble.nvim](https://github.com/folke/trouble.nvim) | Diagnostics viewer |
 | [conform.nvim](https://github.com/stevearc/conform.nvim) | Code formatting |
+| [nvim-lint](https://github.com/mfussenegger/nvim-lint) | Linting for tools without an LSP (cspell) |
 | [vim-fugitive](https://github.com/tpope/vim-fugitive) | Git integration |
 | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Git hunk signs and actions |
 | [blink.cmp](https://github.com/Saghen/blink.cmp) | Autocomplete (LSP, path, buffer) |
@@ -60,6 +61,27 @@ For JS/TS the chain is picked per project from the config files present: `oxlint
 A repo counts as having adopted a tool if it has that tool's config file, names it in `package.json`, or configures it through Vite+. Every ancestor manifest is checked, not just the nearest, so a monorepo package inherits a toolchain declared in the workspace root. The manifest and Vite+ checks are matched narrowly so neighbouring repos aren't caught: `vite.config.ts` only counts when it mentions `vite-plus` and a `lint:` or `fmt:` field, and the manifest is matched on the quoted package name, so `eslint-plugin-oxlint` in a repo still running eslint doesn't read as oxlint.
 
 There's no detection on the eslint side -- it's the fallback, not a decision. That works because prettier and eslint_d are only ever resolved from a project's `node_modules/.bin`: in a repo that uses neither, conform finds neither and `lsp_format = "fallback"` takes over. Installing prettier or eslint_d globally would break that, and they'd start running in repos that never asked for them. Keep them project-local, or teach `js_formatters` to detect them the way it detects oxc.
+
+**Spell checking**: cspell runs via nvim-lint on open, write and leaving insert mode, but only in projects that have a cspell config. Diagnostics are `INFO` severity so they stay out of the statusline's error/warning counts.
+
+## Opening a repo runs its tooling
+
+This config prefers a project's own tools over global ones. The LSP servers,
+conform's formatters and cspell are all resolved from `node_modules/.bin` before
+anything on `$PATH`, and files like `eslint.config.js` and `cspell.config.js` are
+executed by the tools that read them. So cloning a repo and opening a file in it
+runs code from that repo, with your permissions, before you've read a line of it.
+
+There's no trust prompt. That's deliberate: project-local resolution is what makes
+the editor match what CI runs, and a prompt on every new clone would mean tooling
+silently doesn't work until you notice and answer it. It's the same bargain every
+JS editor setup makes, but it's worth knowing you've made it.
+
+If a particular checkout doesn't warrant that, read it before opening it, or open
+it somewhere its tooling can't reach anything you care about. Adding a real gate
+would mean one allowlist of trusted roots consulted by conform, the LSP
+`root_dir`s and nvim-lint together -- gating any one of them on its own would look
+like a control without being one.
 
 ## Key Bindings
 
