@@ -107,14 +107,19 @@ end
 -- Walked per directory rather than handed to vim.fs.find, because the marker
 -- list contains nested paths and find only matches basenames. Checking every
 -- place in every directory costs ~2ms when nothing is found, which is the common
--- case in repos without cspell, so the result is cached: a config appearing
--- mid-session needs the buffer reopened to be picked up.
+-- case in repos without cspell, so the result is cached.
 --
 -- Keyed by directory rather than buffer, so a buffer that moves between projects
 -- (:saveas, :file) is looked up afresh. An unnamed buffer has no origin to key
 -- on and isn't cached at all -- caching that against its buffer number would
 -- outlive the rename and suppress linting in whatever project it lands in.
+--
+-- Entries expire rather than living for the session. Because the key is a
+-- directory and not a buffer, reopening the file wouldn't clear a stale answer,
+-- so adding a config or running npm install would otherwise go unnoticed until
+-- restart. Re-walking every 30s costs ~2ms per directory, which is nothing.
 local resolved = {}
+local cache_ttl_ms = 30000
 
 local function lookup(bufnr)
 	local origin = search_origin(bufnr)
@@ -122,11 +127,12 @@ local function lookup(bufnr)
 		return { config = false, bin = false }
 	end
 
+	local now = vim.uv.now()
 	local cached = resolved[origin]
-	if cached then
+	if cached and (now - cached.at) < cache_ttl_ms then
 		return cached
 	end
-	local found = { config = false, bin = false }
+	local found = { config = false, bin = false, at = now }
 
 	for dir in vim.fs.parents(vim.fs.joinpath(origin, "x")) do
 		if not found.config then
@@ -206,10 +212,13 @@ return {
 		vim.api.nvim_create_autocmd({ "FileType", "BufWritePost", "InsertLeave" }, {
 			group = vim.api.nvim_create_augroup("nvim_lint_cspell", { clear = true }),
 			callback = function(event)
-				if not cspell_config(event.buf) then
-					return
-				end
-				if not (local_cspell(event.buf) or vim.fn.executable("cspell") == 1) then
+				local eligible = cspell_config(event.buf)
+					and (local_cspell(event.buf) or vim.fn.executable("cspell") == 1)
+				if not eligible then
+					-- A buffer can stop being eligible after it has been linted, by
+					-- moving into a project without cspell. Drop what we published
+					-- rather than leaving diagnostics behind that nothing will refresh.
+					vim.diagnostic.reset(lint.get_namespace("cspell"), event.buf)
 					return
 				end
 				lint.try_lint()
