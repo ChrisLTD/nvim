@@ -62,7 +62,7 @@ A repo counts as having adopted a tool if it has that tool's config file, names 
 
 There's no detection on the eslint side -- it's the fallback, not a decision. That works because prettier and eslint_d are only ever resolved from a project's `node_modules/.bin`: in a repo that uses neither, conform finds neither and `lsp_format = "fallback"` takes over. Installing prettier or eslint_d globally would break that, and they'd start running in repos that never asked for them. Keep them project-local, or teach `js_formatters` to detect them the way it detects oxc.
 
-**Spell checking**: cspell runs via nvim-lint on open, write and leaving insert mode, but only in projects that have a cspell config. Diagnostics are `INFO` severity so they stay out of the statusline's error/warning counts.
+**Spell checking**: cspell runs via nvim-lint on open, write and leaving insert mode, but only in projects that have a cspell config. Diagnostics are `INFO` severity so they stay out of the statusline's error/warning counts. `<leader>aw` yanks the word under the cursor and opens whichever config the linter resolved, at its words list, ready to paste.
 
 ## Opening a repo runs its tooling
 
@@ -209,6 +209,7 @@ These are diffview's built-in, buffer-local keymaps (active inside the 3-way mer
 | `<leader>ww` | Toggle word wrap |
 | `<leader>dm` | Toggle dark/light mode |
 | `<leader>cp` | Copy relative file path to clipboard |
+| `<leader>aw` | Yank word under cursor, open the project's cspell config at its words list |
 | `<leader>u` | Toggle undotree |
 
 Pressing `<leader>` (or any prefix) and pausing shows a which-key popup of available bindings.

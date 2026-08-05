@@ -173,6 +173,29 @@ local function local_cspell(bufnr)
 	return lookup(bufnr).bin or nil
 end
 
+-- Yank the word and open the dictionary rather than editing it in place: writing
+-- into the words array without clobbering the file's own formatting takes far
+-- more code than pasting one line is worth.
+--
+-- Resolved through cspell_config so this opens the file the linter is actually
+-- using. Searching for the config separately would miss the nested locations and
+-- the linked-worktree handling, and could land on an unrelated config further up.
+local function open_cspell_dictionary()
+	local path = cspell_config(0)
+	if not path then
+		vim.notify("No cspell config found for this buffer", vim.log.levels.WARN)
+		return
+	end
+
+	vim.fn.setreg('"', vim.fn.expand("<cword>"))
+	vim.cmd.edit(vim.fn.fnameescape(path))
+	-- The config can be yaml, toml or js, so fall back to the bare key when the
+	-- JSON form doesn't match. Failing to find it just leaves the cursor at the top.
+	if vim.fn.search('"words"') == 0 then
+		vim.fn.search("\\<words\\>")
+	end
+end
+
 return {
 	"mfussenegger/nvim-lint",
 	event = { "BufReadPost", "BufWritePost", "InsertLeave" },
@@ -224,5 +247,7 @@ return {
 				lint.try_lint()
 			end,
 		})
+
+		vim.keymap.set("n", "<leader>aw", open_cspell_dictionary, { desc = "Open cspell dictionary at words" })
 	end,
 }
