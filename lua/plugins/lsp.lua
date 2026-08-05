@@ -5,7 +5,10 @@ return {
 		"mason-org/mason-lspconfig.nvim",
 		dependencies = { "neovim/nvim-lspconfig", "saghen/blink.cmp" },
 		opts = {
-			ensure_installed = { "ts_ls", "gopls", "eslint", "lua_ls" },
+			-- eslint and oxlint each require their own config file to be present
+			-- before they attach, so they self-select per repo while projects
+			-- migrate from one to the other.
+			ensure_installed = { "ts_ls", "gopls", "eslint", "oxlint", "lua_ls" },
 		},
 		config = function(_, opts)
 			require("mason-lspconfig").setup(opts)
