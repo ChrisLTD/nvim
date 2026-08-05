@@ -35,3 +35,26 @@ require("lazy").setup({
 	-- don't report change detection to the UI
 	change_detection = { notify = false },
 })
+
+-- lazy.nvim has no minimum-release-age setting (folke/lazy.nvim#2141), so plugin
+-- updates go through scripts/update-plugins, which only ever moves the lockfile
+-- to commits that have been public for two weeks. Block the paths that would
+-- jump straight to a branch tip and bypass that window.
+--
+-- Commands.cmd is the single choke point for both `:Lazy <cmd>` and the U/u/S
+-- keys in the Lazy UI, so wrapping it covers every entry point except the
+-- background checker (already disabled above).
+local Commands = require("lazy.view.commands")
+local lazy_cmd = Commands.cmd
+local blocked = { update = true, sync = true }
+
+Commands.cmd = function(cmd, opts)
+	if blocked[cmd] then
+		vim.notify(
+			"`:Lazy " .. cmd .. "` is disabled -- run scripts/update-plugins --apply instead",
+			vim.log.levels.WARN
+		)
+		return
+	end
+	return lazy_cmd(cmd, opts)
+end
