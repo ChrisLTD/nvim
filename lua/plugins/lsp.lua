@@ -11,12 +11,12 @@ return {
 			ensure_installed = { "ts_ls", "gopls", "eslint", "oxlint", "lua_ls" },
 		},
 		config = function(_, opts)
-			require("mason-lspconfig").setup(opts)
-
+			-- Register blink's capabilities before mason-lspconfig enables the
+			-- installed servers (automatic_enable calls vim.lsp.enable for us).
 			vim.lsp.config("*", {
 				capabilities = require("blink.cmp").get_lsp_capabilities(),
 			})
-			vim.lsp.enable(opts.ensure_installed)
+			require("mason-lspconfig").setup(opts)
 
 			vim.api.nvim_create_autocmd("LspAttach", {
 				callback = function(event)

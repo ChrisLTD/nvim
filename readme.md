@@ -18,6 +18,7 @@ lua/
   lazy_init.lua         -- Lazy.nvim plugin manager bootstrap
   colorscheme.lua       -- Active colorscheme selection
   set.lua               -- Editor options
+  statusline.lua        -- Custom statusline
   remap.lua             -- Custom keybindings
   autocmds.lua          -- Autocommands (e.g. trim trailing whitespace)
 ```
@@ -35,6 +36,7 @@ lua/
 | [conform.nvim](https://github.com/stevearc/conform.nvim) | Code formatting |
 | [vim-fugitive](https://github.com/tpope/vim-fugitive) | Git integration |
 | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Git hunk signs and actions |
+| [diffview.nvim](https://github.com/sindrets/diffview.nvim) | Git diffs, PR review, file history, merge conflicts |
 | [blink.cmp](https://github.com/Saghen/blink.cmp) | Autocomplete (LSP, path, buffer) |
 | [flash.nvim](https://github.com/folke/flash.nvim) | Jump/motion navigation |
 | [arrow.nvim](https://github.com/otavioschwanck/arrow.nvim) | Bookmark files |
@@ -82,12 +84,16 @@ Leader key is `<Space>`.
 | `D` | Delete file/directory (inside netrw) |
 | `<leader>vh` | Search help tags |
 | `;` | Open Arrow file bookmarks |
-| `b` | Open Arrow buffer bookmarks |
+| `m` | Open Arrow buffer bookmarks |
 | `s` | Flash jump |
 | `S` | Flash treesitter select |
-| `<C-d` / `<C-u>` | Half page up / down |
+| `<C-d>` / `<C-u>` | Half page down / up |
+| `<C-k>` / `<C-j>` | Next/prev quickfix item |
+| `<leader>k` / `<leader>j` | Next/prev location list item |
 | `<C-g>` | Show relative file path in command line |
 | `1<C-g>` | Show absolute file path in command line |
+
+> **Note:** `m` (Arrow buffer bookmarks) shadows the built-in "set mark" command, so marks can't be set interactively with `m{letter}`.
 
 ### LSP
 
@@ -105,6 +111,7 @@ Leader key is `<Space>`.
 | `<leader>f` | Format buffer (conform, falls back to LSP) |
 | `[d` / `]d` | Prev/next diagnostic (built-in) |
 | `<leader>e` | Float diagnostics |
+| `<leader>zig` | Restart LSP |
 
 ### Autocomplete (blink.cmp)
 
@@ -126,6 +133,7 @@ Leader key is `<Space>`.
 | `<leader>cs` | Symbols |
 | `<leader>cl` | LSP defs/refs |
 | `<leader>xQ` | Quickfix list |
+| `<leader>xL` | Location list |
 
 ### Git
 
@@ -164,10 +172,13 @@ These are diffview's built-in, buffer-local keymaps (active inside the 3-way mer
 |-----|--------|
 | `J` / `K` (visual) | Move selection down/up |
 | `<leader>y` | Yank to system clipboard |
+| `<leader>Y` | Yank line to system clipboard |
 | `<leader>p` | Paste over selection (preserve register) |
 | `<leader>d` | Delete to void register |
 | `<leader>s` | Search/replace word under cursor |
 | `\\` | Toggle comments |
+
+> **Note:** `<leader>d` shares a prefix with `<leader>dm` (dark mode toggle) — Neovim will pause briefly before firing it.
 
 ### Go (active in .go files only)
 
@@ -188,6 +199,7 @@ These are diffview's built-in, buffer-local keymaps (active inside the 3-way mer
 | `<leader>dm` | Toggle dark/light mode |
 | `<leader>cp` | Copy relative file path to clipboard |
 | `<leader>u` | Toggle undotree |
+| `<leader>tf` | Run current test file (Plenary) |
 
 Pressing `<leader>` (or any prefix) and pausing shows a which-key popup of available bindings.
 

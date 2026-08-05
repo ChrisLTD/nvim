@@ -1,7 +1,6 @@
--- Set the "leader" key to Space.
+-- The "leader" key is Space.
 -- Leader is a prefix used for your custom shortcuts, e.g. <leader>pv = <Space>pv
--- leader is set in lazy.lua
--- vim.g.mapleader = " "
+-- It is set in lazy_init.lua (before plugins load, as lazy.nvim requires).
 
 -- Open netrw/file explorer
 vim.keymap.set("n", "-", vim.cmd.Ex)
